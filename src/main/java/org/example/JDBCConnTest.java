@@ -4,7 +4,6 @@ package org.example;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class JDBCConnTest {
     private Article article;
@@ -12,13 +11,11 @@ public class JDBCConnTest {
     private PreparedStatement pstmt = null;
     private ResultSet rs = null;
     private String cmd;
-    Scanner sc = new Scanner(System.in);
 
 
     public List<Article> connect(Article article, String cmd) {
         this.article = article;
         this.cmd = cmd;
-        String[] actionMethodName = cmd.split(" ");
 
         try {
             Class.forName("org.mariadb.jdbc.Driver");
@@ -26,7 +23,7 @@ public class JDBCConnTest {
             conn = DriverManager.getConnection(url, "root", "");
             System.out.println("연결 성공!");
 
-            switch (actionMethodName[1]) {
+            switch (cmd.split(" ")[1]) {
                 case "write":
                     doWrite();
                     break;
@@ -46,6 +43,20 @@ public class JDBCConnTest {
         } catch (SQLException e) {
             System.out.println("에러 : " + e);
         } finally {
+            try {
+                if (rs != null && !rs.isClosed()) {
+                    rs.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (pstmt != null && !pstmt.isClosed()) {
+                    pstmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
             try {
                 if (conn != null && !conn.isClosed()) {
                     conn.close();
@@ -77,12 +88,10 @@ public class JDBCConnTest {
         pstmt = conn.prepareStatement(sql);
 
         System.out.print("수정할 제목 : ");
-        pstmt.setString(1, sc.nextLine());
+        pstmt.setString(1, Container.getSc().nextLine());
         System.out.print("수정할 내용 : ");
-        pstmt.setString(2, sc.nextLine());
+        pstmt.setString(2, Container.getSc().nextLine());
         pstmt.executeUpdate();
-
-
     }
 
 
