@@ -17,6 +17,7 @@ public class JDBCConnTest {
         this.article = article;
         this.cmd = cmd;
 
+
         try {
             Class.forName("org.mariadb.jdbc.Driver");
             String url = "jdbc:mariadb://127.0.0.1:3306/AM_DB_25_03?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul";
@@ -31,6 +32,9 @@ public class JDBCConnTest {
                     return showList();
                 case "modify":
                     doModify();
+                    break;
+                case "delete":
+                    doDelete();
                     break;
 
                 default:
@@ -69,28 +73,27 @@ public class JDBCConnTest {
 
     }
 
+    private void doDelete() throws SQLException {
+        String id = cmd.split(" ")[2];
+
+
+        String sql = "delete from article where id = " + id;
+        pstmt = conn.prepareStatement(sql);
+        pstmt.executeUpdate();
+
+        System.out.println(id + "번 삭제 완료!");
+
+    }
+
     private void doModify() throws SQLException {
-        String[] cmdBits = cmd.split(" ");
-
-        String id = cmdBits[2];
+        String id = cmd.split(" ")[2];
 
 
-        String sql = "select * from article where id = " + id;
-        pstmt = conn.prepareStatement(sql);
-        rs = pstmt.executeQuery();
-
-        while (rs.next()) {
-            System.out.print("원래 제목 : \n" + rs.getString("title"));
-            System.out.print("원래 내용 : \n" + rs.getString("body"));
-        }
-
-        sql = "update article set title = ?, body = ?  where id = " + id;
+        String sql = "update article set title = ?, body = ?  where id = " + id;
         pstmt = conn.prepareStatement(sql);
 
-        System.out.print("수정할 제목 : ");
-        pstmt.setString(1, Container.getSc().nextLine());
-        System.out.print("수정할 내용 : ");
-        pstmt.setString(2, Container.getSc().nextLine());
+        pstmt.setString(1, article.getTitle());
+        pstmt.setString(2, article.getBody());
         pstmt.executeUpdate();
     }
 
@@ -100,31 +103,37 @@ public class JDBCConnTest {
         String sql = "insert into article (title,body) values (?,?)";
         pstmt = conn.prepareStatement(sql);
         pstmt.setString(1, article.getTitle());
-
         pstmt.setString(2, article.getBody());
         pstmt.executeUpdate();
-
     }
-
 
     public List<Article> showList() throws SQLException {
 
         List<Article> articles_data = new ArrayList<>();
 
-        String sql = "select * from article order by id desc"; // 맨 처음부터 내림차순으로 주면 최신 데이터부터 보여줌.
-        pstmt = conn.prepareStatement(sql);
-        rs = pstmt.executeQuery();
+        String sql = "select * from article order by id desc";
+        try {
+            if (!cmd.split(" ")[2].isEmpty()) {
+                String id = cmd.split(" ")[2];
+                sql = "select * from article where id = " + id;
+            }
+        } catch (Exception e) {
+        } finally {
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
 
-        while (rs.next()) { // 데이터가 없을 때까지 반복한다.
-            int id = rs.getInt("id");
-            String title = rs.getString("title");
-            String body = rs.getString("body");
+            while (rs.next()) { // 데이터가 없을 때까지 반복한다.
+                int id = rs.getInt("id");
+                String title = rs.getString("title");
+                String body = rs.getString("body");
 
-            articles_data.add(new Article(id, title, body));
+                articles_data.add(new Article(id, title, body));
+            }
         }
         return articles_data;
-
     }
+
+
 }
 
 
