@@ -51,6 +51,12 @@ public class Main {
                 for (Article article : articles_data) {
                     System.out.printf("   %d     /   %s    /    %s    \n", article.getId(), article.getTitle(), article.getBody());
                 }
+            } else if (cmd.startsWith("article modify")) {
+
+
+
+                jdbcConnTest.connect(null, cmd);
+
             }
         }
 
