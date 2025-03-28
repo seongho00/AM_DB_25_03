@@ -11,8 +11,11 @@ public class Main {
 
         Scanner sc = new Scanner(System.in);
 
+
         int lastArticleId = 0;
         List<Article> articles = new ArrayList<>();
+
+        JDBCConnTest jdbcConnTest = new JDBCConnTest();
 
         while (true) {
             System.out.print("명령어 > ");
@@ -32,17 +35,22 @@ public class Main {
                 Article article = new Article(id, title, body);
                 articles.add(article);
 
+                jdbcConnTest.write(article);
+
                 lastArticleId++;
                 System.out.println(article);
             } else if (cmd.equals("article list")) {
                 System.out.println("==목록==");
-                if (articles.size() == 0) {
+
+                List<Article> articles_data = jdbcConnTest.list();
+                if (articles_data.size() == 0) {
                     System.out.println("게시글 없음");
                     continue;
                 }
-                System.out.println("   번호    /    제목    ");
-                for (Article article : articles) {
-                    System.out.printf("   %d     /   %s    \n", article.getId(), article.getTitle());
+
+                System.out.println("   번호    /    제목    /    내용    ");
+                for (Article article : articles_data) {
+                    System.out.printf("   %d     /   %s    /    %s    \n", article.getId(), article.getTitle(), article.getBody());
                 }
             }
         }
