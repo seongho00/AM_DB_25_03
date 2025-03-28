@@ -35,14 +35,13 @@ public class Main {
                 Article article = new Article(id, title, body);
                 articles.add(article);
 
-                jdbcConnTest.write(article);
+                jdbcConnTest.connect(article, cmd);
 
                 lastArticleId++;
                 System.out.println(article);
             } else if (cmd.equals("article list")) {
                 System.out.println("==목록==");
-
-                List<Article> articles_data = jdbcConnTest.list();
+                List<Article> articles_data = jdbcConnTest.connect(null, cmd);
                 if (articles_data.size() == 0) {
                     System.out.println("게시글 없음");
                     continue;
