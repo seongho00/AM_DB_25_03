@@ -1,5 +1,7 @@
 package org.example;
 
+import java.util.Map;
+
 public class Article {
     private int id;
     private String regDate;
@@ -19,6 +21,14 @@ public class Article {
         this.id = id;
         this.title = title;
         this.body = body;
+    }
+
+    public Article(Map<String, Object> articleMap) {
+        this.id = (int) articleMap.get("id");
+        this.regDate = (String) articleMap.get("regDate");
+        this.updateDate = (String) articleMap.get("updateDate");
+        this.title = (String) articleMap.get("title");
+        this.body = (String) articleMap.get("body");
     }
 
     @Override
