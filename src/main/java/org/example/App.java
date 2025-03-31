@@ -115,6 +115,9 @@ public class App {
                 System.out.println("번호는 정수로 입력해");
                 return 0;
             }
+            SecSql sql = new SecSql();
+
+            DBUtil.selectRowIntValue(conn, sql);
 
             System.out.println("==수정==");
             System.out.print("새 제목 : ");
@@ -122,7 +125,6 @@ public class App {
             System.out.print("새 내용 : ");
             String body = sc.nextLine().trim();
 
-            SecSql sql = new SecSql();
             sql.append("UPDATE article");
             sql.append("SET updateDate = NOW()");
             if (!title.isEmpty()) { // title 값이 들어있을 때
@@ -136,6 +138,42 @@ public class App {
             DBUtil.update(conn, sql);
 
             System.out.println(id + "번 글이 수정되었습니다.");
+
+        } else if (cmd.startsWith("article detail")) {
+            int id = 0;
+
+            try {
+                id = Integer.parseInt(cmd.split(" ")[2]);
+            } catch (Exception e) {
+                System.out.println("번호는 정수로 입력해");
+                return 0;
+            }
+
+            Article foundArticle = null;
+
+            SecSql sql = new SecSql();
+            sql.append("SELECT *");
+            sql.append("FROM article");
+            sql.append("WHERE id = ?;", id);
+
+            List<Map<String, Object>> articleListMap = DBUtil.selectRows(conn, sql);
+
+            for (Map<String, Object> articleMap : articleListMap) {
+                foundArticle = new Article(articleMap);
+            }
+
+            if (foundArticle == null) {
+                System.out.println("게시글이 없습니다");
+                return 0;
+            }
+
+            System.out.println("번호 : " + foundArticle.getId());
+            System.out.println("작성 날짜 : " + foundArticle.getRegDate());
+            System.out.println("수정 날짜 : " + foundArticle.getUpdateDate());
+            System.out.println("제목 : " + foundArticle.getTitle());
+            System.out.println("내용 : " + foundArticle.getBody());
+
+
         } else if (cmd.startsWith("article delete")) {
             int id = 0;
 
