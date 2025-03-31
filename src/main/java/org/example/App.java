@@ -122,38 +122,38 @@ public class App {
             System.out.print("새 내용 : ");
             String body = sc.nextLine().trim();
 
-            PreparedStatement pstmt = null;
+            SecSql sql = new SecSql();
+            sql.append("UPDATE article");
+            sql.append("SET updateDate = NOW()");
+            if (!title.isEmpty()) { // title 값이 들어있을 때
+                sql.append(", title = ?", title);
+            }
+            if (!body.isEmpty()) { // body 값이 들어 있을 때
+                sql.append(",`body` = ?", body);
+            }
+            sql.append("WHERE id = ?;", id);
+
+            DBUtil.update(conn, sql);
+
+            System.out.println(id + "번 글이 수정되었습니다.");
+        } else if (cmd.startsWith("article delete")) {
+            int id = 0;
 
             try {
-                String sql = "UPDATE article";
-                sql += " SET updateDate = NOW()";
-                if (title.length() > 0) {
-                    sql += " ,title = '" + title + "'";
-                }
-                if (body.length() > 0) {
-                    sql += " ,`body` = '" + body + "'";
-                }
-                sql += " WHERE id = " + id + ";";
-
-                System.out.println(sql);
-
-                pstmt = conn.prepareStatement(sql);
-
-                pstmt.executeUpdate();
-
-            } catch (SQLException e) {
-                System.out.println("에러 4 : " + e);
-            } finally {
-                try {
-                    if (pstmt != null && !pstmt.isClosed()) {
-                        pstmt.close();
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-
+                id = Integer.parseInt(cmd.split(" ")[2]);
+            } catch (Exception e) {
+                System.out.println("번호는 정수로 입력해");
+                return 0;
             }
-            System.out.println(id + "번 글이 수정되었습니다.");
+
+            SecSql sql = new SecSql();
+            sql.append("DELETE FROM article");
+            sql.append("WHERE id = ?;", id);
+
+            DBUtil.delete(conn, sql);
+
+            System.out.println(id + "번 글이 삭제되었습니다.");
+
         }
         return 0;
     }
