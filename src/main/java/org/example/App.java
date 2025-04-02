@@ -3,7 +3,9 @@ package org.example;
 import org.example.util.DBUtil;
 import org.example.util.SecSql;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +60,53 @@ public class App {
 
         if (cmd.equals("exit")) {
             return -1;
+        }
+
+        if (cmd.equals("member join")) {
+            System.out.println("==회원가입==");
+            System.out.print("아이디 : ");
+            String regId = sc.nextLine();
+
+            SecSql sql = new SecSql();
+            sql.append("SELECT *");
+            sql.append("FROM member");
+            sql.append("WHERE loginId = ?;", regId);
+
+            List<Map<String, Object>> memberListMap = DBUtil.selectRows(conn, sql);
+
+            if (!memberListMap.isEmpty()) {
+                System.out.println("이미 가입된 ID입니다.");
+                return 0;
+            }
+            
+            System.out.print("비밀번호 : ");
+            String regPw = sc.nextLine();
+            if (regPw.isEmpty()) {
+                System.out.println("비밀번호를 입력해주세요");
+                return 0;
+            }
+
+            System.out.print("이름 : ");
+            String name = sc.nextLine();
+            if (name.isEmpty()) {
+                System.out.println("이름을 입력해주세요");
+                return 0;
+            }
+
+
+            sql = new SecSql();
+
+            sql.append("INSERT INTO member");
+            sql.append("SET regDate = NOW(),");
+            sql.append("updateDate = NOW(),");
+            sql.append("loginId = ?,", regId);
+            sql.append("loginPw = ?,", regPw);
+            sql.append("name = ?", name);
+
+            DBUtil.insert(conn, sql);
+
+            System.out.println("회원가입이 완료되었습니다.");
+
         }
 
         if (cmd.equals("article write")) {
@@ -116,32 +165,19 @@ public class App {
                 return 0;
             }
 
-            SecSql sql = new SecSql();
-            sql.append("Select *");
-            sql.append("FROM article");
-            sql.append("WHERE id = ?;", id);
-
-            Map<String, Object> selectRow = DBUtil.selectRow(conn, sql);
-
-            if (selectRow.isEmpty()) {
-                System.out.println(id + "번 게시물은 없습니다.");
-                return 0;
-            }
-
-
             System.out.println("==수정==");
             System.out.print("새 제목 : ");
             String title = sc.nextLine().trim();
             System.out.print("새 내용 : ");
             String body = sc.nextLine().trim();
 
-            sql = new SecSql();
+            SecSql sql = new SecSql();
             sql.append("UPDATE article");
             sql.append("SET updateDate = NOW()");
-            if (!title.isEmpty()) { // title 값이 들어있을 때
+            if (!title.isEmpty()) {
                 sql.append(", title = ?", title);
             }
-            if (!body.isEmpty()) { // body 값이 들어 있을 때
+            if (!body.isEmpty()) {
                 sql.append(",`body` = ?", body);
             }
             sql.append("WHERE id = ?;", id);
@@ -151,6 +187,7 @@ public class App {
             System.out.println(id + "번 글이 수정되었습니다.");
 
         } else if (cmd.startsWith("article detail")) {
+
             int id = 0;
 
             try {
@@ -160,30 +197,21 @@ public class App {
                 return 0;
             }
 
-            SecSql sql = new SecSql();
-            sql.append("Select *");
-            sql.append("FROM article");
-            sql.append("WHERE id = ?;", id);
-
-            Map<String, Object> selectRow = DBUtil.selectRow(conn, sql);
-
-            if (selectRow.isEmpty()) {
-                System.out.println(id + "번 게시물은 없습니다.");
-                return 0;
-            }
-
             Article foundArticle = null;
 
-            sql = new SecSql();
+            SecSql sql = new SecSql();
             sql.append("SELECT *");
             sql.append("FROM article");
             sql.append("WHERE id = ?;", id);
 
+
             List<Map<String, Object>> articleListMap = DBUtil.selectRows(conn, sql);
+
 
             for (Map<String, Object> articleMap : articleListMap) {
                 foundArticle = new Article(articleMap);
             }
+
 
             if (foundArticle == null) {
                 System.out.println("게시글이 없습니다");
