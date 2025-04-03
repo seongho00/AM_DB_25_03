@@ -1,5 +1,6 @@
 package org.example;
 
+import org.example.container.Container;
 import org.example.controller.ArticleController;
 import org.example.controller.MemberController;
 
@@ -9,70 +10,77 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 public class App {
-
+    private Scanner sc;
 
     public App() {
-
+        Container.init();
+        this.sc = Container.sc;
     }
+
 
     public void run() {
         System.out.println("==프로그램 시작==");
-        Scanner sc = new Scanner(System.in);
-        Connection conn = null;
 
-        try {
-            Class.forName("org.mariadb.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        while (true) {
+            System.out.print("명령어 > ");
+            String cmd = sc.nextLine().trim();
 
-        String url = "jdbc:mariadb://127.0.0.1:3306/AM_DB_25_03?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul";
+            Connection conn = null;
 
-        try {
-            conn = DriverManager.getConnection(url, "root", "");
+            try {
+                Class.forName("org.mariadb.jdbc.Driver");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
 
-            MemberController memberController = new MemberController(sc, conn);
-            ArticleController articleController = new ArticleController(sc, conn);
+            String url = "jdbc:mariadb://127.0.0.1:3306/AM_DB_25_03?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul";
 
+            try {
+                conn = DriverManager.getConnection(url, "root", "");
 
-            while (true) {
-                System.out.print("명령어 > ");
-                String cmd = sc.nextLine().trim();
+                Container.conn = conn;
 
-                int actionResult = action(conn, sc, cmd, memberController, articleController);
+                int actionResult = action(cmd);
 
                 if (actionResult == -1) {
                     System.out.println("==프로그램 종료==");
                     sc.close();
                     break;
                 }
-            }
 
-        } catch (SQLException e) {
-            System.out.println("에러 1 : " + e);
-        } finally {
-            try {
-                if (conn != null && !conn.isClosed()) {
-                    conn.close();
-                }
             } catch (SQLException e) {
-                e.printStackTrace();
+                System.out.println("에러 1 : " + e);
+            } finally {
+                try {
+                    if (conn != null && !conn.isClosed()) {
+                        conn.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
-
-
     }
 
-    private int action(Connection conn, Scanner sc, String cmd, MemberController memberController, ArticleController articleController) {
+    private int action(String cmd) {
 
         if (cmd.equals("exit")) {
             return -1;
         }
 
+        MemberController memberController = Container.memberController;
+        ArticleController articleController = Container.articleController;
+
         if (cmd.equals("member login")) {
             memberController.doLogin();
         } else if (cmd.equals("member logout")) {
             memberController.doLogout();
+        } else if (cmd.equals("member profile")) {
+            memberController.showProfile();
+        } else if (cmd.equals("member list")) {
+            memberController.showList();
+        } else if (cmd.startsWith("member detail")) {
+
         }
 
         if (cmd.equals("member join")) {

@@ -1,24 +1,19 @@
 package org.example.controller;
 
-import org.example.Member;
-
+import org.example.container.Container;
+import org.example.dto.Member;
 import org.example.service.MemberService;
 
-import java.sql.Connection;
 import java.util.Map;
 import java.util.Scanner;
 
 public class MemberController {
-    Member isLoginedMember;
-    private boolean isLogined;
-    private Connection conn;
     private Scanner sc;
     private MemberService memberService;
 
-    public MemberController(Scanner sc, Connection conn) {
-        this.sc = sc;
-        this.conn = conn;
-        this.memberService = new MemberService();
+    public MemberController() {
+        this.sc = Container.sc;
+        this.memberService = Container.memberService;
     }
 
     public void doJoin() {
@@ -36,7 +31,7 @@ public class MemberController {
                 continue;
             }
 
-            boolean isLoginIdDup = memberService.isLoginIdDup(conn, loginId);
+            boolean isLoginIdDup = memberService.isLoginIdDup(loginId);
 
             System.out.println(isLoginIdDup);
 
@@ -88,13 +83,13 @@ public class MemberController {
             break;
         }
 
-        int id = memberService.doJoin(conn, loginId, loginPw, name);
+        int id = memberService.doJoin(loginId, loginPw, name);
 
         System.out.println(id + "번 회원이 가입됨");
     }
 
     public void doLogin() {
-        if (isLogined) {
+        if (Container.session.isLogined) {
             System.out.println("이미 로그인 상태입니다.");
             return;
         }
@@ -106,7 +101,7 @@ public class MemberController {
         while (true) {
             System.out.print("로그인 아이디 : ");
             String loginId = sc.nextLine().trim();
-            Map<String, Object> memberMap = memberService.getLoginId(conn, loginId);
+            Map<String, Object> memberMap = memberService.getLoginId(loginId);
 
             if (memberMap.isEmpty()) {
                 System.out.println("회원가입한 아이디가 없습니다.");
@@ -120,37 +115,63 @@ public class MemberController {
         while (true) {
             System.out.print("로그인 비밀번호 : ");
             String loginPw = sc.nextLine().trim();
+            if (availablecount == 0) {
+                System.out.println("로그인 가능 횟수 초과");
+                break;
+            }
 
             if (!foundMember.getLoginPw().equals(loginPw)) {
                 System.out.println("비밀번호가 틀렸습니다. 가능한 로그인 시도 횟수 : " + availablecount);
                 availablecount--;
-                if (availablecount == 0) {
-                    System.out.println("로그인 가능 횟수 초과");
-                    break;
-                }
                 continue;
             }
+
+            Container.session.loginedMember = foundMember;
+            Container.session.isLogined = true;
+            System.out.println("로그인 되었습니다.");
             break;
         }
 
-        if (availablecount == 0) {
-            return;
-        }
-
-        isLoginedMember = foundMember;
-        isLogined = true;
-        System.out.println("로그인 되었습니다.");
     }
 
     public void doLogout() {
-        if (!isLogined) {
+        if (!Container.session.isLogined) {
             System.out.println("이미 로그아웃 상태입니다.");
             return;
         }
 
-        isLoginedMember = null;
-        isLogined = false;
+        Container.session.loginedMember = null;
+        Container.session.isLogined = false;
         System.out.println("로그아웃 되었습니다.");
     }
 
+    public void showProfile() {
+        if (!Container.session.isLogined) {
+            System.out.println("로그인 되어있지 않습니다.");
+            return;
+        }
+        Member loginedMember = Container.session.loginedMember;
+        System.out.println("이름 : " + loginedMember.getName());
+        System.out.println("로그인 아이디 : " + loginedMember.getLoginId());
+        System.out.println("가입날짜 : " + loginedMember.getRegDate());
+        System.out.println("마지막 수정 날짜 : " + loginedMember.getUpdateDate());
+
+    }
+
+    public void showList() {
+        System.out.println("==목록==");
+
+//        List<Article> articles = articleService.getArticles();
+//
+//        if (articles.size() == 0) {
+//            System.out.println("게시글이 없습니다");
+//            return;
+//        }
+//
+//        System.out.println("  번호  /   제목  ");
+//        for (Article article : articles) {
+//            System.out.printf("  %d     /   %s   \n", article.getId(), article.getTitle());
+//        }
+
+    }
 }

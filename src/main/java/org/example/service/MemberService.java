@@ -1,8 +1,8 @@
 package org.example.service;
 
+import org.example.container.Container;
 import org.example.dao.MemberDao;
 
-import java.sql.Connection;
 import java.util.Map;
 
 public class MemberService {
@@ -10,18 +10,18 @@ public class MemberService {
     private MemberDao memberDao;
 
     public MemberService() {
-        this.memberDao = new MemberDao();
+        this.memberDao = Container.memberDao;
     }
 
-    public boolean isLoginIdDup(Connection conn, String loginId) {
-        return memberDao.isLoginIdDup(conn, loginId);
+    public boolean isLoginIdDup(String loginId) {
+        return memberDao.isLoginIdDup(loginId);
     }
 
-    public int doJoin(Connection conn, String loginId, String loginPw, String name) {
-        return memberDao.doJoin(conn,loginId, loginPw, name);
+    public int doJoin(String loginId, String loginPw, String name) {
+        return memberDao.doJoin(loginId, loginPw, name);
     }
 
-    public Map<String, Object> getLoginId(Connection conn, String loginId) {
-        return memberDao.getLoginId(conn, loginId);
+    public Map<String, Object> getLoginId(String loginId) {
+        return memberDao.getLoginId(loginId);
     }
 }

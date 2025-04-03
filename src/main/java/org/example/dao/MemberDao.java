@@ -1,5 +1,6 @@
 package org.example.dao;
 
+import org.example.container.Container;
 import org.example.util.DBUtil;
 import org.example.util.SecSql;
 
@@ -7,9 +8,13 @@ import java.sql.Connection;
 import java.util.Map;
 
 public class MemberDao {
+    Connection conn;
 
+    public MemberDao() {
+        this.conn = Container.conn;
+    }
 
-    public boolean isLoginIdDup(Connection conn, String loginId) {
+    public boolean isLoginIdDup(String loginId) {
         SecSql sql = new SecSql();
 
         sql.append("SELECT COUNT(*) > 0");
@@ -19,7 +24,7 @@ public class MemberDao {
         return DBUtil.selectRowBooleanValue(conn, sql);
     }
 
-    public int doJoin(Connection conn, String loginId, String loginPw, String name) {
+    public int doJoin(String loginId, String loginPw, String name) {
 
         SecSql sql = new SecSql();
 
@@ -33,7 +38,7 @@ public class MemberDao {
         return DBUtil.insert(conn, sql);
     }
 
-    public Map<String, Object> getLoginId(Connection conn, String loginId) {
+    public Map<String, Object> getLoginId(String loginId) {
         SecSql sql = new SecSql();
 
         sql.append("SELECT *");
