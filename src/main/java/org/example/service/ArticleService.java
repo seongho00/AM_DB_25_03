@@ -40,4 +40,9 @@ public class ArticleService {
 
         return articleDao.getArticlesByMemberId();
     }
+
+
+    public List<Article> getArticleByWord(String rearchWord) {
+        return  articleDao.getArticleByWord(rearchWord);
+    }
 }

@@ -90,4 +90,24 @@ public class ArticleDao {
 
         return DBUtil.selectRows(Container.conn, sql);
     }
+
+    public List<Article> getArticleByWord(String rearchWord) {
+        SecSql sql = new SecSql();
+
+        sql.append("SELECT A.*, M.name");
+        sql.append("FROM article AS A");
+        sql.append("INNER JOIN `member` AS M");
+        sql.append("ON A.memberId = M.id");
+        sql.append("WHERE title LIKE '%" + rearchWord + "%';");
+
+        List<Map<String, Object>> articleListMap = DBUtil.selectRows(Container.conn, sql);
+
+        List<Article> articles = new ArrayList<>();
+
+        for (Map<String, Object> articleMap : articleListMap) {
+            articles.add(new Article(articleMap));
+        }
+
+        return articles;
+    }
 }

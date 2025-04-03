@@ -157,21 +157,5 @@ public class MemberController {
 
     }
 
-    public void showList() {
-        System.out.println("==목록==");
 
-//        List<Article> articles = articleService.getArticles();
-//
-//        if (articles.size() == 0) {
-//            System.out.println("게시글이 없습니다");
-//            return;
-//        }
-//
-//        System.out.println("  번호  /   제목  ");
-//        for (Article article : articles) {
-//            System.out.printf("  %d     /   %s   \n", article.getId(), article.getTitle());
-//        }
-
-
-    }
 }

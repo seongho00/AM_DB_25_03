@@ -38,22 +38,31 @@ public class ArticleController {
     }
 
     public void showList(String cmd) {
-        int selectPage;
-        System.out.println("==목록==");
+        int selectPage = 1;
+        String rearchWord;
+        List<Article> articles = null;
 
-        List<Article> articles = articleService.getArticles();
-
-        if (articles.size() == 0) {
-            System.out.println("게시글이 없습니다");
-            return;
-        }
         try {
-            selectPage = Integer.parseInt(cmd.split(" ")[2]);
+            if (cmd.startsWith("article research")) {
+                rearchWord = cmd.split(" ")[2];
+                articles = articleService.getArticleByWord(rearchWord);
+            } else if (cmd.equals("article list")) {
+                articles = articleService.getArticles();
+            } else {
+                selectPage = Integer.parseInt(cmd.split(" ")[2]);
+                articles = articleService.getArticles();
+            }
+
+            if (articles.size() == 0) {
+                System.out.println("게시글이 없습니다");
+                return;
+            }
+
+            System.out.println("==목록==");
+
             int totalPage = articles.size() % 10 == 0 ? articles.size() / 10 : articles.size() / 10 + 1;
 
-
             System.out.println("  번호  /   작성자    /   제목  ");
-
             for (int i = (selectPage - 1) * 10; i < (selectPage - 1) * 10 + 10; i++) {
                 Article article = articles.get(i);
                 System.out.printf("  %d    /    %s    /   %s   \n", article.getId(), article.getName(), article.getTitle());
@@ -64,10 +73,12 @@ public class ArticleController {
             }
             System.out.printf(" %d ", totalPage);
             System.out.println();
+
+
         } catch (Exception e) {
             System.out.println("번호는 정수로 입력해");
-            return;
         }
+
 
     }
 
@@ -195,6 +206,4 @@ public class ArticleController {
             System.out.printf("  %d    /    %s    /   %s   \n", article.getId(), article.getName(), article.getTitle());
         }
     }
-
-
 }

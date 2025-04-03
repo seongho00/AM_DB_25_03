@@ -79,15 +79,13 @@ public class App {
             memberController.showProfile();
         } else if (cmd.equals("member list")) {
             articleController.showMemberList();
-        } else if (cmd.startsWith("member detail")) {
-
         }
 
         if (cmd.equals("member join")) {
             memberController.doJoin();
         } else if (cmd.equals("article write")) {
             articleController.doWrite();
-        } else if (cmd.startsWith("article list")) {
+        } else if (cmd.startsWith("article list") || (cmd.startsWith("article research"))) {
             articleController.showList(cmd);
         } else if (cmd.startsWith("article modify")) {
             articleController.doModify(cmd);
