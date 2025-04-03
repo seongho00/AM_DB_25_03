@@ -1,15 +1,18 @@
 package org.example.controller;
 
+import org.example.Member;
+
 import org.example.service.MemberService;
 
 import java.sql.Connection;
+import java.util.Map;
 import java.util.Scanner;
 
 public class MemberController {
-
+    Member isLoginedMember;
+    private boolean isLogined;
     private Connection conn;
     private Scanner sc;
-
     private MemberService memberService;
 
     public MemberController(Scanner sc, Connection conn) {
@@ -89,4 +92,65 @@ public class MemberController {
 
         System.out.println(id + "번 회원이 가입됨");
     }
+
+    public void doLogin() {
+        if (isLogined) {
+            System.out.println("이미 로그인 상태입니다.");
+            return;
+        }
+
+        int availablecount = 3;
+        Member foundMember = null;
+        System.out.println("==회원가입==");
+
+        while (true) {
+            System.out.print("로그인 아이디 : ");
+            String loginId = sc.nextLine().trim();
+            Map<String, Object> memberMap = memberService.getLoginId(conn, loginId);
+
+            if (memberMap.isEmpty()) {
+                System.out.println("회원가입한 아이디가 없습니다.");
+                continue;
+            }
+
+            foundMember = new Member(memberMap);
+            break;
+        }
+
+        while (true) {
+            System.out.print("로그인 비밀번호 : ");
+            String loginPw = sc.nextLine().trim();
+
+            if (!foundMember.getLoginPw().equals(loginPw)) {
+                System.out.println("비밀번호가 틀렸습니다. 가능한 로그인 시도 횟수 : " + availablecount);
+                availablecount--;
+                if (availablecount == 0) {
+                    System.out.println("로그인 가능 횟수 초과");
+                    break;
+                }
+                continue;
+            }
+            break;
+        }
+
+        if (availablecount == 0) {
+            return;
+        }
+
+        isLoginedMember = foundMember;
+        isLogined = true;
+        System.out.println("로그인 되었습니다.");
+    }
+
+    public void doLogout() {
+        if (!isLogined) {
+            System.out.println("이미 로그아웃 상태입니다.");
+            return;
+        }
+
+        isLoginedMember = null;
+        isLogined = false;
+        System.out.println("로그아웃 되었습니다.");
+    }
+
 }

@@ -1,5 +1,6 @@
 package org.example.service;
 
+import org.example.Article;
 import org.example.dao.ArticleDao;
 
 import java.sql.Connection;
@@ -7,30 +8,31 @@ import java.util.List;
 import java.util.Map;
 
 public class ArticleService {
+
     private ArticleDao articleDao;
 
-    public ArticleService() {
-        articleDao = new ArticleDao();
+    public ArticleService(Connection conn) {
+        this.articleDao = new ArticleDao(conn);
     }
 
+    public int doWrite(String title, String body) {
+        return articleDao.doWrite(title, body);
 
-    public int doWrite(Connection conn, String title, String body) {
-        return articleDao.doWrite(conn, title, body);
     }
 
-    public List<Map<String, Object>> foundArticle(Connection conn) {
-        return articleDao.foundArticle(conn);
+    public List<Article> getArticles() {
+        return articleDao.getArticles();
     }
 
-    public Map<String, Object> foundArticleById(Connection conn, int id) {
-        return articleDao.foundArticleById(conn, id);
+    public Map<String, Object> getArticleById(int id) {
+        return articleDao.getArticleById(id);
     }
 
-    public void doModify(Connection conn, String title, String body, int id) {
-        articleDao.doModify(conn, title, body, id);
+    public void doUpdate(int id, String title, String body) {
+        articleDao.doUpdate(id, title, body);
     }
 
-    public void doDelete(Connection conn, int id) {
-        articleDao.doDelete(conn, id);
+    public void doDelete(int id) {
+        articleDao.doDelete(id);
     }
 }
