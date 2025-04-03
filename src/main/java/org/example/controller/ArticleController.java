@@ -37,19 +37,38 @@ public class ArticleController {
         System.out.println(id + "번 글이 생성됨");
     }
 
-    public void showList() {
+    public void showList(String cmd) {
+        int selectPage;
         System.out.println("==목록==");
 
         List<Article> articles = articleService.getArticles();
+
         if (articles.size() == 0) {
             System.out.println("게시글이 없습니다");
             return;
         }
+        try {
+            selectPage = Integer.parseInt(cmd.split(" ")[2]);
+            int totalPage = articles.size() % 10 == 0 ? articles.size() / 10 : articles.size() / 10 + 1;
 
-        System.out.println("  번호  /   제목  ");
-        for (Article article : articles) {
-            System.out.printf("  %d    /    %s    /   %s   \n", article.getId(), article.getName(), article.getTitle());
+
+            System.out.println("  번호  /   작성자    /   제목  ");
+
+            for (int i = (selectPage - 1) * 10; i < (selectPage - 1) * 10 + 10; i++) {
+                Article article = articles.get(i);
+                System.out.printf("  %d    /    %s    /   %s   \n", article.getId(), article.getName(), article.getTitle());
+            }
+
+            for (int i = 1; i < totalPage; i++) {
+                System.out.printf(" %d /", i);
+            }
+            System.out.printf(" %d ", totalPage);
+            System.out.println();
+        } catch (Exception e) {
+            System.out.println("번호는 정수로 입력해");
+            return;
         }
+
     }
 
     public void doModify(String cmd) {
@@ -74,6 +93,12 @@ public class ArticleController {
             return;
         }
 
+        Article article = new Article(articleMap);
+        if (article.getMemberId() != Container.session.loginedMemberId) {
+            System.out.println("당신의 게시글이 아닙니다.");
+            return;
+        }
+
         System.out.println("==수정==");
         System.out.print("새 제목 : ");
         String title = sc.nextLine().trim();
@@ -87,7 +112,6 @@ public class ArticleController {
     }
 
     public void showDetail(String cmd) {
-
 
         int id = 0;
 
@@ -112,6 +136,7 @@ public class ArticleController {
         System.out.println("번호 : " + article.getId());
         System.out.println("작성날짜 : " + article.getRegDate());
         System.out.println("수정날짜 : " + article.getUpdateDate());
+        System.out.println("작성자 : " + article.getName());
         System.out.println("제목 : " + article.getTitle());
         System.out.println("내용 : " + article.getBody());
     }
@@ -135,6 +160,13 @@ public class ArticleController {
 
         if (articleMap.isEmpty()) {
             System.out.println(id + "번 글은 없어");
+            return;
+        }
+
+        Article article = new Article(articleMap);
+
+        if (article.getMemberId() != Container.session.loginedMemberId) {
+            System.out.println("당신의 게시글이 아닙니다.");
             return;
         }
 
