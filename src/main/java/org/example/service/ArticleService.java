@@ -35,4 +35,9 @@ public class ArticleService {
     public void doDelete(int id) {
         articleDao.doDelete(id);
     }
+
+    public List<Map<String, Object>> getArticlesByMemberId() {
+
+        return articleDao.getArticlesByMemberId();
+    }
 }

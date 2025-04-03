@@ -107,7 +107,6 @@ public class MemberController {
                 System.out.println("회원가입한 아이디가 없습니다.");
                 continue;
             }
-
             foundMember = new Member(memberMap);
             break;
         }
@@ -127,6 +126,7 @@ public class MemberController {
             }
 
             Container.session.loginedMember = foundMember;
+            Container.session.loginedMemberId = foundMember.getId();
             Container.session.isLogined = true;
             System.out.println("로그인 되었습니다.");
             break;
@@ -139,7 +139,6 @@ public class MemberController {
             System.out.println("이미 로그아웃 상태입니다.");
             return;
         }
-
         Container.session.loginedMember = null;
         Container.session.isLogined = false;
         System.out.println("로그아웃 되었습니다.");
@@ -172,6 +171,7 @@ public class MemberController {
 //        for (Article article : articles) {
 //            System.out.printf("  %d     /   %s   \n", article.getId(), article.getTitle());
 //        }
+
 
     }
 }

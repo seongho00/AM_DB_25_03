@@ -4,15 +4,9 @@ import org.example.container.Container;
 import org.example.util.DBUtil;
 import org.example.util.SecSql;
 
-import java.sql.Connection;
 import java.util.Map;
 
 public class MemberDao {
-    Connection conn;
-
-    public MemberDao() {
-        this.conn = Container.conn;
-    }
 
     public boolean isLoginIdDup(String loginId) {
         SecSql sql = new SecSql();
@@ -21,7 +15,7 @@ public class MemberDao {
         sql.append("FROM `member`");
         sql.append("WHERE loginId = ?;", loginId);
 
-        return DBUtil.selectRowBooleanValue(conn, sql);
+        return DBUtil.selectRowBooleanValue(Container.conn, sql);
     }
 
     public int doJoin(String loginId, String loginPw, String name) {
@@ -35,7 +29,7 @@ public class MemberDao {
         sql.append("loginPw = ?,", loginPw);
         sql.append("`name` = ?;", name);
 
-        return DBUtil.insert(conn, sql);
+        return DBUtil.insert(Container.conn, sql);
     }
 
     public Map<String, Object> getLoginId(String loginId) {
@@ -45,7 +39,7 @@ public class MemberDao {
         sql.append("FROM `member`");
         sql.append("WHERE loginId = ?;", loginId);
 
-        return DBUtil.selectRow(conn, sql);
+        return DBUtil.selectRow(Container.conn, sql);
 
     }
 }

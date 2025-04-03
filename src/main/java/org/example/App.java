@@ -78,7 +78,7 @@ public class App {
         } else if (cmd.equals("member profile")) {
             memberController.showProfile();
         } else if (cmd.equals("member list")) {
-            memberController.showList();
+            articleController.showMemberList();
         } else if (cmd.startsWith("member detail")) {
 
         }

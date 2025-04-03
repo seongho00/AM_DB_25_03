@@ -36,7 +36,6 @@ public class ArticleController {
         System.out.println("==목록==");
 
         List<Article> articles = articleService.getArticles();
-
         if (articles.size() == 0) {
             System.out.println("게시글이 없습니다");
             return;
@@ -130,5 +129,22 @@ public class ArticleController {
         articleService.doDelete(id);
 
         System.out.println(id + "번 글이 삭제되었습니다.");
+    }
+
+    public void showMemberList() {
+
+        List<Map<String, Object>> articleListMap = articleService.getArticlesByMemberId();
+
+        if (articleListMap.isEmpty()) {
+            System.out.println("작성 글 없음.");
+            return;
+        }
+
+        for (Map<String, Object> articleMap : articleListMap) {
+            Article article = new Article(articleMap);
+            System.out.printf("  %d     /   %s   \n", article.getId(), article.getTitle());
+        }
+
+
     }
 }
