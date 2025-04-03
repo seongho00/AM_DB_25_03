@@ -27,8 +27,10 @@ public class ArticleDao {
 
     public List<Article> getArticles() {
         SecSql sql = new SecSql();
-        sql.append("SELECT *");
-        sql.append("FROM article");
+        sql.append("SELECT A.*, M.name");
+        sql.append("FROM article AS A");
+        sql.append("INNER JOIN `member` AS M");
+        sql.append("ON A.memberId = M.id");
         sql.append("ORDER BY id DESC");
 
         List<Map<String, Object>> articleListMap = DBUtil.selectRows(Container.conn, sql);
@@ -44,9 +46,11 @@ public class ArticleDao {
     public Map<String, Object> getArticleById(int id) {
         SecSql sql = new SecSql();
 
-        sql.append("SELECT *");
-        sql.append("FROM article");
-        sql.append("WHERE id = ?", id);
+        sql.append("SELECT A.*, M.name");
+        sql.append("FROM article AS A");
+        sql.append("INNER JOIN `member` AS M");
+        sql.append("ON A.memberId = M.id");
+        sql.append("WHERE A.id = ?", id);
 
         return DBUtil.selectRow(Container.conn, sql);
     }
@@ -78,8 +82,10 @@ public class ArticleDao {
 
         SecSql sql = new SecSql();
 
-        sql.append("SELECT *");
-        sql.append("FROM article");
+        sql.append("SELECT A.*, M.name");
+        sql.append("FROM article AS A");
+        sql.append("INNER JOIN `member` AS M");
+        sql.append("ON A.memberId = M.id");
         sql.append("WHERE memberId = ?", Container.session.loginedMemberId);
 
         return DBUtil.selectRows(Container.conn, sql);

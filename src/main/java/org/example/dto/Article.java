@@ -9,6 +9,7 @@ public class Article {
     private String title;
     private String body;
     private int memberId;
+    private String name;
 
     public Article(int id, String regDate, String updateDate, String title, String body, int memberId) {
         this.id = id;
@@ -26,6 +27,7 @@ public class Article {
         this.title = (String) articleMap.get("title");
         this.body = (String) articleMap.get("body");
         this.memberId = (int) articleMap.get("memberId");
+        this.name = (String) articleMap.get("name");
     }
 
     @Override
@@ -35,6 +37,14 @@ public class Article {
                 ", title='" + title + '\'' +
                 ", body='" + body + '\'' +
                 '}';
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getMemberId() {

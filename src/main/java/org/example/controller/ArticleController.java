@@ -21,6 +21,11 @@ public class ArticleController {
 
 
     public void doWrite() {
+        if (!Container.session.isLogined) {
+            System.out.println("로그인이 필요한 서비스입니다.");
+            return;
+        }
+
         System.out.println("==글쓰기==");
         System.out.print("제목 : ");
         String title = sc.nextLine();
@@ -43,11 +48,15 @@ public class ArticleController {
 
         System.out.println("  번호  /   제목  ");
         for (Article article : articles) {
-            System.out.printf("  %d     /   %s   \n", article.getId(), article.getTitle());
+            System.out.printf("  %d    /    %s    /   %s   \n", article.getId(), article.getName(), article.getTitle());
         }
     }
 
     public void doModify(String cmd) {
+        if (!Container.session.isLogined) {
+            System.out.println("로그인이 필요한 서비스입니다.");
+            return;
+        }
 
         int id = 0;
 
@@ -79,6 +88,7 @@ public class ArticleController {
 
     public void showDetail(String cmd) {
 
+
         int id = 0;
 
         try {
@@ -107,6 +117,10 @@ public class ArticleController {
     }
 
     public void doDelete(String cmd) {
+        if (!Container.session.isLogined) {
+            System.out.println("로그인이 필요한 서비스입니다.");
+            return;
+        }
 
         int id = 0;
 
@@ -132,6 +146,10 @@ public class ArticleController {
     }
 
     public void showMemberList() {
+        if (!Container.session.isLogined) {
+            System.out.println("로그인이 필요한 서비스입니다.");
+            return;
+        }
 
         List<Map<String, Object>> articleListMap = articleService.getArticlesByMemberId();
 
@@ -142,9 +160,9 @@ public class ArticleController {
 
         for (Map<String, Object> articleMap : articleListMap) {
             Article article = new Article(articleMap);
-            System.out.printf("  %d     /   %s   \n", article.getId(), article.getTitle());
+            System.out.printf("  %d    /    %s    /   %s   \n", article.getId(), article.getName(), article.getTitle());
         }
-
-
     }
+
+
 }
